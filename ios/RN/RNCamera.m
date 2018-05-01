@@ -310,6 +310,13 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 {
     AVCaptureConnection *connection = [self.stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
     [connection setVideoOrientation:[RNCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
+    static SystemSoundID soundID = 0;
+    if (soundID == 0) {
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"photoShutter2" ofType:@"caf"];
+        NSURL *filePath = [NSURL fileURLWithPath:path isDirectory:NO];
+        AudioServicesCreateSystemSoundID((__bridge CFURLRef)filePath, &soundID);
+    }
+    AudioServicesPlaySystemSound(soundID);
     [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:connection completionHandler: ^(CMSampleBufferRef imageSampleBuffer, NSError *error) {
         if (imageSampleBuffer && !error) {
             NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
